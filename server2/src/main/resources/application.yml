@@ -1,0 +1,33 @@
+spring:
+  #定义使用的环境配置文件
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Beijing
+    username: root
+    password: 123456
+  mvc:
+    servlet:
+      path: /server2
+
+logging:
+  level:
+    root: info #日志配置DEBUG,INFO,WARN,ERROR
+    com.zrq.transaction.server: debug
+#  file: demo_log.log #配置日志生成路径
+#  path: /var/logs #配置日志文件名称
+---
+#开发环境配置
+spring:
+  profiles: dev
+server:
+  port: 8089
+logging:
+  level:
+    com.zrq.dao: debug
+---
+#测试环境配置
+spring:
+  profiles: test
+server:
+  port: 8088
