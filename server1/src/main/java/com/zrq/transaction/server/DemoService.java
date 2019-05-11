@@ -16,6 +16,6 @@ public class DemoService {
     public void test(){
         demoDao.insert("server1");
         HttpClient.get("http://localhost:8089/server2/test");
-        int i=100/0;
+//        int i=100/0;
     }
 }

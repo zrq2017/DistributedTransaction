@@ -34,6 +34,8 @@ public class ZrqTransactionManager {
         JSONObject jsonObject=new JSONObject();
         jsonObject.put("command","create");//create-创建事务组，add-添加事务
         jsonObject.put("groupId",groupId);
+        //保存全局事务组ID
+        currentGroupId.set(groupId);
         nettyClient.send(jsonObject);
         return groupId;
     }
@@ -52,7 +54,7 @@ public class ZrqTransactionManager {
     }
 
     /**
-     * 注册分支事务
+     * 添加分支事务状态
      * @param zrqTransaction
      * @param isEnd
      * @param transactionType
@@ -62,7 +64,7 @@ public class ZrqTransactionManager {
         JSONObject jsonObject=new JSONObject();
         jsonObject.put("groupId",zrqTransaction.getGroupId());
         jsonObject.put("transcationId",zrqTransaction.getTransactionId());
-        jsonObject.put("transcationType",zrqTransaction.getTransactionType());
+        jsonObject.put("transcationType",transactionType);
         jsonObject.put("command","add");
         jsonObject.put("isEnd",isEnd);
         nettyClient.send(jsonObject);

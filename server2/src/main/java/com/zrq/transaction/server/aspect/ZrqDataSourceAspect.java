@@ -27,7 +27,7 @@ public class ZrqDataSourceAspect {
     @Around("execution(* javax.sql.DataSource.getConnection(..))")
     public Connection around(ProceedingJoinPoint point) throws Throwable{
         if(ZrqTransactionManager.getCurrent()!=null){
-            Connection connection = (Connection)point.proceed();
+//            Connection connection = (Connection)point.proceed();
             return new ZrqConnection((Connection)point.proceed(), ZrqTransactionManager.getCurrent());
         } else {
             return (Connection) point.proceed();
