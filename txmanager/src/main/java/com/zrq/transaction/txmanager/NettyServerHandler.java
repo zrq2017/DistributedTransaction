@@ -44,17 +44,18 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
         JSONObject jsonObject=JSONObject.parseObject((String) msg);
 
-        String command=jsonObject.getString("command");//create-创建事务组，add-添加事务
+        String command=jsonObject.getString("command");//create-创建事务组，add-添加/注册事务
         String groupId=jsonObject.getString("groupId");//事务组id
         String transactionType=jsonObject.getString("transactionType");//子事务类型，commit-待提交，rollback-待回滚
         Integer transactionCount=jsonObject.getInteger("transactionCount");//事务数量
+//        String transactionId=jsonObject.getString("transactionId");//分支事务ID
         Boolean isEnd=jsonObject.getBoolean("isEnd");//是否结束事务
 
         if("create".equals(command)){
-            //创建事务组
+            //创建事务组，开启全局事务
             transactionTypeMap.put(groupId,new ArrayList<String>());
         }else if("add".equals(command)){
-            //加入事务组
+            //加入事务组，注册分支事务
             transactionTypeMap.get(groupId).add(transactionType);
             if(isEnd){
                 isEndMap.put(groupId,true);
@@ -74,6 +75,18 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                 }
             }
         }
+//        else if("regist".equals(command)){
+//            //2.注册分支事务
+//            transactionTypeMap.get(groupId).add(transactionId);
+//            //3.注册的过程中发现有事务要回滚
+//            if("rollback".equals(transactionType)){
+//                System.out.println("接收到一个回滚");
+//                sentMsg(groupId,"rollback");//整个事务组进行回滚
+//            }
+//        }else if("commit".equals(command)){
+//            System.out.println("全局事务提交");
+//            sentMsg(groupId,"commit");
+//        }
     }
 
     private void sendResult(JSONObject result){

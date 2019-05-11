@@ -3,11 +3,13 @@ package com.zrq.transaction.server.transactional;
 import com.alibaba.fastjson.JSONObject;
 import com.zrq.transaction.server.netty.NettyClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@Component
 public class ZrqTransactionManager {
 
     private static NettyClient nettyClient;
@@ -23,6 +25,10 @@ public class ZrqTransactionManager {
 
     private static Map<String,ZrqTransaction> ZRQ_TRANSACTION_MAP=new HashMap<>();
 
+    /**
+     * 创建全局事务组
+     * @return
+     */
     public static String createTransactionGroup(){
         String groupId= UUID.randomUUID().toString();
         JSONObject jsonObject=new JSONObject();
@@ -32,6 +38,11 @@ public class ZrqTransactionManager {
         return groupId;
     }
 
+    /**
+     * 创建分支事务
+     * @param groupId
+     * @return
+     */
     public static ZrqTransaction createTranscation(String groupId){
         String transactionId=UUID.randomUUID().toString();
         ZrqTransaction zrqTransaction=new ZrqTransaction(groupId,transactionId);
@@ -40,6 +51,13 @@ public class ZrqTransactionManager {
         return zrqTransaction;
     }
 
+    /**
+     * 注册分支事务
+     * @param zrqTransaction
+     * @param isEnd
+     * @param transactionType
+     * @return
+     */
     public static ZrqTransaction addTranscation(ZrqTransaction zrqTransaction,Boolean isEnd,TransactionType transactionType){
         JSONObject jsonObject=new JSONObject();
         jsonObject.put("groupId",zrqTransaction.getGroupId());
@@ -50,6 +68,18 @@ public class ZrqTransactionManager {
         nettyClient.send(jsonObject);
         System.out.println("添加事务");
         return zrqTransaction;
+    }
+
+    /**
+     * 提交全局事务
+     * @param groupId
+     */
+    public static void commitGlobalTransaction(String groupId){
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("groupId",groupId);
+        jsonObject.put("command","commit");
+        nettyClient.send(jsonObject);
+        System.out.println("提交全局事务");
     }
 
     public static ZrqTransaction getTransaction(String groupId){
